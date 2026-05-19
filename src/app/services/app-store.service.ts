@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { Book, Review, Loan, AppView } from '../models/models';
 import { ApiService } from './api.service';
 import { UiStore } from './ui.store';
@@ -83,6 +83,16 @@ export class AppStore {
   constructor() {
     this.loadBooks();
     this.loadReviews();
+
+    effect(() => {
+      if (this.isAuthenticated()) {
+        this.loadLoans();
+        this.loadFavorites();
+      } else {
+        this.loans.set([]);
+        this.favorites.set([]);
+      }
+    });
   }
 
   loadBooks(): void {
@@ -201,14 +211,23 @@ export class AppStore {
     });
   }
 
-  addBook(book: Omit<Book, 'id'>): void {
-    this.loadBooks();
+  addBook(book: Omit<Book, 'id'>) {
+    // Si no tenemos autor_id, enviamos un default (ej: 1) o lo extraemos si existe
+    const bookData = { ...book, autor_id: 1 };
+    return this.api.createBook(bookData);
   }
 
   updateBook(bookId: string | number, updates: Partial<Book>): void {
     this.api.updateBook(Number(bookId), updates).subscribe({
       next: () => this.loadBooks(),
       error: (err) => console.error('Error actualizando libro:', err),
+    });
+  }
+
+  uploadPdf(bookId: string | number, file: File): void {
+    this.api.uploadBookPdf(bookId, file).subscribe({
+      next: () => this.loadBooks(),
+      error: (err) => console.error('Error subiendo PDF:', err),
     });
   }
 

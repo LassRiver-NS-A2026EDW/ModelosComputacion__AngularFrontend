@@ -56,6 +56,15 @@ export class BookDetailComponent {
     return this.bookReviews().find(r => String(r.userId) === String(this.currentUser?.id));
   });
 
+  readonly activeLoan = computed(() => {
+    const book = this.book();
+    const user = this.currentUser;
+    if (!book || !user) return null;
+    return this.store.loans().find(
+      (l) => String(l.bookId) === String(book.id) && String(l.userId) === String(user.id) && (l.status === 'active' || l.status === 'overdue')
+    ) ?? null;
+  });
+
   goBack(): void {
     this.router.navigate(['/catalog']);
   }
@@ -104,12 +113,27 @@ export class BookDetailComponent {
     const book = this.book();
     if (book) {
       if (this.auth.isAuthenticated()) {
-        // Here we would implement the real reservation logic or call an API endpoint.
-        // For now, we could just alert or show a success message.
-        alert(`Has reservado "${book.title}" exitosamente.`);
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 14); // 14 days loan
+        this.store.addLoan({
+          bookId: book.id,
+          bookTitle: book.title,
+          userId: this.currentUser!.id,
+          userName: this.currentUser!.name,
+          loanDate: new Date().toISOString().split('T')[0],
+          dueDate: dueDate.toISOString().split('T')[0],
+          status: 'active'
+        });
         return;
       }
       this.ui.openAuthModal('Debes iniciar sesión para reservar un libro.');
+    }
+  }
+
+  handleReturn(): void {
+    const loan = this.activeLoan();
+    if (loan) {
+      this.store.updateLoan(String(loan.id), { status: 'returned' });
     }
   }
 

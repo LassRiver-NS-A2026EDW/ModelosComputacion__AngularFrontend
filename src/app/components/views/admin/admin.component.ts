@@ -42,6 +42,7 @@ export class AdminComponent {
     available: true,
     reviewCount: 0,
   });
+  selectedFile: File | null = null;
 
   // Loan form
   showLoanForm = signal(false);
@@ -90,23 +91,47 @@ export class AdminComponent {
       available: true,
       reviewCount: 0,
     });
+    this.selectedFile = null;
     this.showBookForm.set(true);
   }
 
   openEditBook(book: Book): void {
     this.editBook.set(book);
     this.bookForm.set({ ...book });
+    this.selectedFile = null;
     this.showBookForm.set(true);
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
   }
 
   saveBook(): void {
     const form = this.bookForm();
     if (this.editBook()) {
       this.store.updateBook(this.editBook().id, form);
+      if (this.selectedFile) {
+        this.store.uploadPdf(this.editBook().id, this.selectedFile);
+      }
+      this.showBookForm.set(false);
     } else {
-      this.store.addBook(form);
+      this.store.addBook(form).subscribe({
+        next: (newBook) => {
+          if (this.selectedFile) {
+            this.store.uploadPdf(newBook.id, this.selectedFile);
+          } else {
+            this.store.loadBooks();
+          }
+        },
+        error: (err) => {
+          console.error('Error creando libro:', err);
+        }
+      });
+      this.showBookForm.set(false);
     }
-    this.showBookForm.set(false);
   }
 
   deleteBook(bookId: string | number): void {

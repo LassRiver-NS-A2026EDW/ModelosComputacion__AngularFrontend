@@ -69,7 +69,7 @@ export class BookReaderComponent implements OnInit, OnDestroy {
   });
 
   // PDF state
-  pdfSrc = signal<string>('');
+  pdfSrc = signal<any>('');
   pdfPage = signal(1);
   pdfTotalPages = signal(0);
   pdfZoom = signal(1.0);
@@ -95,7 +95,11 @@ export class BookReaderComponent implements OnInit, OnDestroy {
     effect(() => {
       const b = this.book();
       if (b?.pdfUrl) {
-        this.pdfSrc.set(this.api.getBookPdfEndpoint(b.id));
+        const token = this.auth.getToken();
+        this.pdfSrc.set({
+          url: this.api.getBookPdfEndpoint(b.id),
+          httpHeaders: token ? { Authorization: `Token ${token}` } : {}
+        });
       } else if (b && !b.hasPdf) {
         this.pdfError.set('Este libro no tiene PDF disponible aún.');
         this.pdfLoading.set(false);
@@ -201,7 +205,11 @@ export class BookReaderComponent implements OnInit, OnDestroy {
         this.loadingPdf.set(false);
         // Recargar el src del PDF tras 1.5s
         setTimeout(() => {
-          this.pdfSrc.set(this.api.getBookPdfEndpoint(book.id) + '?t=' + Date.now());
+          const token = this.auth.getToken();
+          this.pdfSrc.set({
+            url: this.api.getBookPdfEndpoint(book.id) + '?t=' + Date.now(),
+            httpHeaders: token ? { Authorization: `Token ${token}` } : {}
+          });
           this.pdfLoading.set(true);
           this.pdfError.set(null);
           this.closeLoadPdfModal();

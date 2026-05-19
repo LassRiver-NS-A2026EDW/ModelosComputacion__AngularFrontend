@@ -84,6 +84,16 @@ export class ApiService {
     return `${this.baseUrl}/libros/${bookId}/pdf/`;
   }
 
+  /** Sube un archivo PDF y lo asocia al libro. */
+  uploadBookPdf(bookId: number | string, file: File): Observable<{ message: string; pdfUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ message: string; pdfUrl: string }>(
+      `${this.baseUrl}/libros/${bookId}/upload-pdf/`,
+      formData
+    );
+  }
+
   // ─── Chat IA (SSE Streaming) ─────────────────────────────
 
   /**

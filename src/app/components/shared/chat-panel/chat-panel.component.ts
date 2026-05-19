@@ -12,13 +12,14 @@ import {
 import { FormsModule } from '@angular/forms';
 import { SlicePipe } from '@angular/common';
 import { LucideAngularModule, Send, X, MessageSquare, ChevronDown, Bot, User } from 'lucide-angular';
+import { MarkdownModule } from 'ngx-markdown';
 import { ChatService } from '../../../services/chat.service';
 import { ChatMessage } from '../../../models/models';
 
 @Component({
   selector: 'app-chat-panel',
   standalone: true,
-  imports: [FormsModule, LucideAngularModule, SlicePipe],
+  imports: [FormsModule, LucideAngularModule, SlicePipe, MarkdownModule],
   templateUrl: './chat-panel.component.html',
   styleUrl: './chat-panel.component.css',
 })

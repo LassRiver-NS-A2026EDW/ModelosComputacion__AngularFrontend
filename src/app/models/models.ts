@@ -15,6 +15,7 @@ export interface Book {
   reviewCount: number;
   hasPdf?: boolean;
   pdfUrl?: string | null;
+  is_reserved_by_me?: boolean;
 }
 
 export interface Review {

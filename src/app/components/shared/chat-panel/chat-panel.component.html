@@ -34,7 +34,7 @@
           </div>
           <div class="chat-bubble-content">
             @if (msg.content) {
-              <p class="chat-bubble-text" [innerHTML]="msg.content.replace('\n', '<br>')"></p>
+              <markdown class="chat-bubble-text markdown-body" [data]="msg.content"></markdown>
             }
             @if (msg.isStreaming && !msg.content) {
               <div class="chat-typing">

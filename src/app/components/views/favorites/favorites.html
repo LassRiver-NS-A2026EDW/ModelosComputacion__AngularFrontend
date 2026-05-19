@@ -34,7 +34,8 @@
             >
               <div class="relative aspect-[3/4] overflow-hidden bg-muted">
                 <img
-                  [src]="book.coverUrl"
+                  [src]="book.coverUrl || '/placeholder.png'"
+                  (error)="$any($event.target).src = '/placeholder.png'"
                   [alt]="book.title"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   (click)="viewBookDetail(book.id)"

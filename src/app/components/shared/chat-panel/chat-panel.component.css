@@ -1,7 +1,17 @@
-.chat-panel {
+:host {
   display: flex;
   flex-direction: column;
   height: 100%;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
   background: var(--card);
   border-left: 1px solid var(--border);
 }
@@ -54,6 +64,7 @@
 /* Messages */
 .chat-messages {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 1rem;
   display: flex;
@@ -162,6 +173,39 @@
 .chat-bubble-text {
   margin: 0;
   white-space: pre-wrap;
+}
+
+/* Estilos para el Markdown renderizado */
+::ng-deep .markdown-body p {
+  margin-bottom: 0.5rem;
+}
+::ng-deep .markdown-body p:last-child {
+  margin-bottom: 0;
+}
+::ng-deep .markdown-body pre {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+::ng-deep .markdown-body code {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.1rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  font-size: 0.8em;
+}
+::ng-deep .chat-bubble--user .markdown-body code,
+::ng-deep .chat-bubble--user .markdown-body pre {
+  background: rgba(255, 255, 255, 0.2);
+}
+::ng-deep .markdown-body strong {
+  font-weight: 600;
+}
+::ng-deep .markdown-body ul, ::ng-deep .markdown-body ol {
+  margin-left: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Cursor de streaming */
