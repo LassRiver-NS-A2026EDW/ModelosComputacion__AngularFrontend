@@ -1,0 +1,179 @@
+<div class="reader-layout">
+
+  <!-- Toolbar -->
+  <div class="reader-toolbar">
+    <button class="reader-back-btn" (click)="goBack()" id="reader-back-btn">
+      <lucide-icon [img]="ArrowLeftIcon" class="h-4 w-4"></lucide-icon>
+      <span>Volver</span>
+    </button>
+
+    <div class="reader-toolbar-center">
+      <h1 class="reader-book-title">{{ book()?.title ?? 'Cargando...' }}</h1>
+      <span class="reader-book-author">{{ book()?.author }}</span>
+    </div>
+
+    <div class="reader-toolbar-actions">
+      @if (isAdmin) {
+        <button class="reader-action-btn" (click)="openLoadPdfModal()" id="reader-load-pdf-btn" title="Cargar PDF">
+          <lucide-icon [img]="DownloadIcon" class="h-4 w-4"></lucide-icon>
+          <span class="reader-action-label">Cargar PDF</span>
+        </button>
+      }
+      <button
+        class="reader-action-btn"
+        [class.reader-action-btn--active]="chatOpen()"
+        (click)="toggleChat()"
+        id="reader-toggle-chat-btn"
+        title="Abrir/cerrar chat"
+      >
+        <lucide-icon [img]="MessageSquareIcon" class="h-4 w-4"></lucide-icon>
+        <span class="reader-action-label">Chat IA</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="reader-body">
+
+    <!-- PDF panel -->
+    <div class="reader-pdf-panel" [class.reader-pdf-panel--full]="!chatOpen()">
+
+      <!-- PDF controls -->
+      <div class="pdf-controls">
+        <div class="pdf-nav">
+          <button class="pdf-ctrl-btn" (click)="prevPage()" [disabled]="pdfPage() <= 1" id="pdf-prev-btn">
+            <lucide-icon [img]="ChevronLeftIcon" class="h-4 w-4"></lucide-icon>
+          </button>
+          <span class="pdf-page-info">
+            <span class="pdf-page-current">{{ pdfPage() }}</span>
+            <span class="pdf-page-sep">/</span>
+            <span class="pdf-page-total">{{ pdfTotalPages() || '—' }}</span>
+          </span>
+          <button class="pdf-ctrl-btn" (click)="nextPage()" [disabled]="pdfPage() >= pdfTotalPages()" id="pdf-next-btn">
+            <lucide-icon [img]="ChevronRightIcon" class="h-4 w-4"></lucide-icon>
+          </button>
+        </div>
+
+        <div class="pdf-zoom">
+          <button class="pdf-ctrl-btn" (click)="zoomOut()" [disabled]="pdfZoom() <= 0.4" title="Alejar">
+            <lucide-icon [img]="ZoomOutIcon" class="h-4 w-4"></lucide-icon>
+          </button>
+          <button class="pdf-zoom-label" (click)="resetZoom()" title="Restablecer zoom">
+            {{ (pdfZoom() * 100).toFixed(0) }}%
+          </button>
+          <button class="pdf-ctrl-btn" (click)="zoomIn()" [disabled]="pdfZoom() >= 3.0" title="Acercar">
+            <lucide-icon [img]="ZoomInIcon" class="h-4 w-4"></lucide-icon>
+          </button>
+        </div>
+
+        @if (selectedText()) {
+          <div class="pdf-selection-badge">
+            <lucide-icon [img]="MessageSquareIcon" class="h-3 w-3"></lucide-icon>
+            Texto seleccionado
+          </div>
+        }
+      </div>
+
+      <!-- PDF viewer area -->
+      <div class="pdf-viewer-area" #pdfContainer>
+        @if (pdfLoading() && !pdfError()) {
+          <div class="pdf-loading">
+            <div class="pdf-spinner"></div>
+            <p>Cargando PDF...</p>
+          </div>
+        }
+
+        @if (pdfError()) {
+          <div class="pdf-error">
+            <lucide-icon [img]="XIcon" class="h-8 w-8 text-destructive"></lucide-icon>
+            <p class="pdf-error-msg">{{ pdfError() }}</p>
+            <button class="pdf-retry-btn" (click)="goBack()">
+              <lucide-icon [img]="ArrowLeftIcon" class="h-4 w-4"></lucide-icon>
+              Volver al libro
+            </button>
+          </div>
+        }
+
+        @if (pdfSrc() && !pdfError()) {
+          <pdf-viewer
+            [src]="pdfSrc()"
+            [page]="pdfPage()"
+            [zoom]="pdfZoom()"
+            [show-all]="false"
+            [render-text]="true"
+            [original-size]="false"
+            [fit-to-page]="true"
+            (after-load-complete)="onLoadComplete($event)"
+            (page-rendered)="pdfLoading.set(false)"
+            (error)="onError($event)"
+            style="width: 100%; display: block;"
+          ></pdf-viewer>
+        }
+      </div>
+    </div>
+
+    <!-- Chat panel -->
+    @if (chatOpen()) {
+      <div class="reader-chat-panel">
+        <app-chat-panel
+          #chatPanelRef
+          [bookId]="bookId()"
+          [bookTitle]="book()?.title ?? ''"
+          [bookDescription]="book()?.description ?? ''"
+        ></app-chat-panel>
+      </div>
+    }
+
+  </div>
+
+  <!-- Modal: Cargar PDF (admin) -->
+  @if (showLoadPdfModal()) {
+    <div class="modal-backdrop" (click)="closeLoadPdfModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">Cargar PDF del libro</h2>
+          <button class="modal-close-btn" (click)="closeLoadPdfModal()">
+            <lucide-icon [img]="XIcon" class="h-4 w-4"></lucide-icon>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">
+            Ingresa la URL pública de un archivo PDF para descargarlo y asociarlo a este libro.
+          </p>
+          <label class="modal-label" for="pdf-url-input">URL del PDF</label>
+          <input
+            id="pdf-url-input"
+            type="url"
+            class="modal-input"
+            placeholder="https://ejemplo.com/libro.pdf"
+            [ngModel]="pdfUrlInput()"
+            (ngModelChange)="pdfUrlInput.set($event)"
+          />
+          @if (loadPdfError()) {
+            <p class="modal-error">{{ loadPdfError() }}</p>
+          }
+          @if (loadPdfSuccess()) {
+            <p class="modal-success">{{ loadPdfSuccess() }}</p>
+          }
+        </div>
+        <div class="modal-footer">
+          <button class="modal-cancel-btn" (click)="closeLoadPdfModal()">Cancelar</button>
+          <button
+            class="modal-confirm-btn"
+            (click)="handleLoadPdf()"
+            [disabled]="!pdfUrlInput().trim() || loadingPdf()"
+            id="modal-load-pdf-confirm"
+          >
+            @if (loadingPdf()) {
+              <span class="modal-spinner"></span>
+              Descargando...
+            } @else {
+              Cargar PDF
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

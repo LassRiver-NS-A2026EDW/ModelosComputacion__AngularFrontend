@@ -1,0 +1,500 @@
+/* ─── Root layout ─────────────────────────────────────────────── */
+.reader-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--background);
+}
+
+/* ─── Toolbar ─────────────────────────────────────────────────── */
+.reader-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  flex-shrink: 0;
+  min-height: 3.25rem;
+}
+
+.reader-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.375rem;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.reader-back-btn:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.reader-toolbar-center {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.reader-book-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reader-book-author {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.reader-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.reader-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.reader-action-btn:hover {
+  background: var(--accent);
+}
+
+.reader-action-btn--active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.reader-action-btn--active:hover {
+  background: hsl(var(--primary) / 0.85);
+}
+
+.reader-action-label {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .reader-action-label { display: inline; }
+}
+
+/* ─── Body ────────────────────────────────────────────────────── */
+.reader-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── PDF Panel ───────────────────────────────────────────────── */
+.reader-pdf-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  transition: flex 0.3s ease;
+}
+
+.reader-pdf-panel--full {
+  flex: 1;
+}
+
+/* PDF Controls Bar */
+.pdf-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.pdf-nav,
+.pdf-zoom {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.pdf-ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pdf-ctrl-btn:hover:not(:disabled) {
+  background: var(--accent);
+}
+
+.pdf-ctrl-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pdf-page-info {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  color: var(--foreground);
+  min-width: 4rem;
+  justify-content: center;
+}
+
+.pdf-page-current {
+  font-weight: 600;
+}
+
+.pdf-page-sep {
+  color: var(--muted-foreground);
+}
+
+.pdf-zoom-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground);
+  padding: 0 0.5rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pdf-zoom-label:hover {
+  background: var(--accent);
+}
+
+.pdf-selection-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.625rem;
+  border-radius: 1rem;
+  background: hsl(var(--primary) / 0.1);
+  color: var(--primary);
+  border: 1px solid hsl(var(--primary) / 0.25);
+  animation: pulse-badge 2s infinite;
+}
+
+/* PDF Viewer Area */
+.pdf-viewer-area {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: #525659;
+  position: relative;
+}
+
+/* Loading */
+.pdf-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #fff;
+  flex: 1;
+  min-height: 200px;
+}
+
+.pdf-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Error */
+.pdf-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem;
+  text-align: center;
+  color: #fff;
+  flex: 1;
+}
+
+.pdf-error-msg {
+  font-size: 0.9375rem;
+  max-width: 28rem;
+  line-height: 1.55;
+}
+
+.pdf-retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.15s;
+}
+
+.pdf-retry-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ─── Chat Panel ──────────────────────────────────────────────── */
+.reader-chat-panel {
+  width: 22rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-left: 1px solid var(--border);
+  animation: slideInRight 0.25s ease;
+}
+
+@media (max-width: 900px) {
+  .reader-chat-panel {
+    position: fixed;
+    right: 0;
+    top: 3.25rem;
+    bottom: 0;
+    width: 90vw;
+    max-width: 22rem;
+    z-index: 50;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+  }
+}
+
+/* ─── Modal ───────────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 28rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: slideUp 0.2s ease;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.modal-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.modal-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: background 0.15s;
+}
+
+.modal-close-btn:hover {
+  background: var(--accent);
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.modal-desc {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modal-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.modal-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background: var(--background);
+  color: var(--foreground);
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.15);
+}
+
+.modal-error {
+  font-size: 0.8125rem;
+  color: var(--destructive, #ef4444);
+  margin: 0;
+}
+
+.modal-success {
+  font-size: 0.8125rem;
+  color: #22c55e;
+  margin: 0;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.modal-cancel-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.modal-cancel-btn:hover {
+  background: var(--accent);
+}
+
+.modal-confirm-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.modal-confirm-btn:hover:not(:disabled) {
+  background: hsl(var(--primary) / 0.85);
+}
+
+.modal-confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ─── Animations ──────────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

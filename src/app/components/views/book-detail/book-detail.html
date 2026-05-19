@@ -55,6 +55,16 @@
               >
                 {{ detailBook.available ? 'Reservar Libro' : 'No Disponible' }}
               </button>
+              @if (detailBook.hasPdf) {
+                <button
+                  id="btn-leer-pdf"
+                  class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-10 px-4 py-2 w-full bg-emerald-600 text-white hover:bg-emerald-700"
+                  (click)="handleReadPdf()"
+                >
+                  <lucide-icon [img]="FileTextIcon" class="h-4 w-4 mr-2"></lucide-icon>
+                  Leer PDF
+                </button>
+              }
             </div>
           </div>
         </div>

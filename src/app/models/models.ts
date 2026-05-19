@@ -13,6 +13,8 @@ export interface Book {
   rating: number;
   available: boolean;
   reviewCount: number;
+  hasPdf?: boolean;
+  pdfUrl?: string | null;
 }
 
 export interface Review {
@@ -46,12 +48,27 @@ export interface Loan {
   status: 'active' | 'overdue' | 'returned';
 }
 
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  isStreaming?: boolean;
+}
+
+export interface ChatRequest {
+  bookId: number | string;
+  selectedText: string;
+  context: string;
+  question: string;
+  history?: { role: string; content: string }[];
+}
+
 export type AppView =
   | 'home'
   | 'login'
   | 'register'
   | 'catalog'
   | 'book-detail'
+  | 'book-reader'
   | 'favorites'
   | 'reviews'
   | 'profile'

@@ -4,6 +4,7 @@ import { RegisterComponent } from './components/views/register/register.componen
 import { HomeComponent } from './components/views/home/home.component';
 import { CatalogComponent } from './components/views/catalog/catalog.component';
 import { BookDetailComponent } from './components/views/book-detail/book-detail.component';
+import { BookReaderComponent } from './components/views/book-reader/book-reader.component';
 import { FavoritesComponent } from './components/views/favorites/favorites.component';
 import { ReviewsComponent } from './components/views/reviews/reviews.component';
 import { ProfileComponent } from './components/views/profile/profile.component';
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'catalog', component: CatalogComponent },
   { path: 'books/:id', component: BookDetailComponent },
+  { path: 'books/:id/read', component: BookReaderComponent },
   { path: 'favorites', component: FavoritesComponent },
   { path: 'reviews', component: ReviewsComponent },
   { path: 'profile', component: ProfileComponent },

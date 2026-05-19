@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Book, Review, User, Loan } from '../models/models';
+import { Book, Review, User, Loan, ChatRequest } from '../models/models';
 import { environment } from "../../environments/environment"
 
 /**
@@ -67,6 +67,80 @@ export class ApiService {
 
   deleteBook(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/libros/${id}/`);
+  }
+
+  // ─── PDF ────────────────────────────────────────────────
+
+  /** Solicita al backend que descargue un PDF desde una URL externa y lo asocie al libro. */
+  downloadBookPdf(bookId: number | string, url: string): Observable<{ message: string; filename: string; pdfUrl: string }> {
+    return this.http.post<{ message: string; filename: string; pdfUrl: string }>(
+      `${this.baseUrl}/libros/${bookId}/download-pdf/`,
+      { url }
+    );
+  }
+
+  /** Retorna la URL del endpoint que sirve el PDF (para usarla en el visor). */
+  getBookPdfEndpoint(bookId: number | string): string {
+    return `${this.baseUrl}/libros/${bookId}/pdf/`;
+  }
+
+  // ─── Chat IA (SSE Streaming) ─────────────────────────────
+
+  /**
+   * Envía un mensaje al chat de IA usando SSE streaming.
+   * Retorna un ReadableStream que emite chunks de texto de la respuesta.
+   */
+  async chatStream(
+    payload: ChatRequest,
+    token: string,
+    onChunk: (chunk: string) => void,
+    onDone: () => void,
+    onError: (err: string) => void
+  ): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/chat/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      onError(`Error ${response.status}: ${errText}`);
+      return;
+    }
+
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if (data === '[DONE]') {
+            onDone();
+            return;
+          }
+          if (data.startsWith('[ERROR]')) {
+            onError(data.slice(7).trim());
+            return;
+          }
+          // Reemplazar saltos de línea escapados
+          onChunk(data.replace(/\\n/g, '\n'));
+        }
+      }
+    }
+    onDone();
   }
 
   // ─── Reseñas ────────────────────────────────────────────

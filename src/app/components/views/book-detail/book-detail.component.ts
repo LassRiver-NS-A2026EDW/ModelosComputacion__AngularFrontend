@@ -4,11 +4,12 @@ import { AppStore } from '../../../services/app-store.service';
 import { UiStore } from '../../../services/ui.store';
 import { AuthStore } from '../../../services/auth.store';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, ArrowLeft, Heart, Star, Calendar, BookOpen, Globe, Building2, LogIn } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Heart, Star, Calendar, BookOpen, Globe, Building2, LogIn, FileText, Download } from 'lucide-angular';
 import { EmptyStateComponent } from '../../shared/empty-state/empty-state.component';
 import { RatingStarsComponent } from '../../shared/rating-stars/rating-stars.component';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 import { Book } from '../../../models/models';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
   selector: 'app-book-detail',
@@ -20,6 +21,7 @@ export class BookDetailComponent {
   readonly store = inject(AppStore);
   readonly ui = inject(UiStore);
   readonly auth = inject(AuthStore);
+  readonly api = inject(ApiService);
   readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
 
@@ -31,6 +33,8 @@ export class BookDetailComponent {
   readonly GlobeIcon = Globe;
   readonly Building2Icon = Building2;
   readonly LogInIcon = LogIn;
+  readonly FileTextIcon = FileText;
+  readonly DownloadIcon = Download;
 
   rating = signal(5);
   comment = signal('');
@@ -107,6 +111,16 @@ export class BookDetailComponent {
       }
       this.ui.openAuthModal('Debes iniciar sesión para reservar un libro.');
     }
+  }
+
+  handleReadPdf(): void {
+    const book = this.book();
+    if (!book) return;
+    if (!this.auth.isAuthenticated()) {
+      this.ui.openAuthModal('Debes iniciar sesión para leer el libro.');
+      return;
+    }
+    this.router.navigate(['/books', book.id, 'read']);
   }
 
   formatDate(dateString: string): string {
