@@ -212,9 +212,7 @@ export class AppStore {
   }
 
   addBook(book: Omit<Book, 'id'>) {
-    // Si no tenemos autor_id, enviamos un default (ej: 1) o lo extraemos si existe
-    const bookData = { ...book, autor_id: 1 };
-    return this.api.createBook(bookData);
+    return this.api.createBook(book);
   }
 
   updateBook(bookId: string | number, updates: Partial<Book>): void {

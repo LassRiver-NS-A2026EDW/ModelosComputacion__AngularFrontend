@@ -57,7 +57,7 @@ export class ApiService {
     return this.http.get<Book>(`${this.baseUrl}/libros/${id}/`);
   }
 
-  createBook(book: Partial<Book> & { autor_id: number }): Observable<Book> {
+  createBook(book: Partial<Book>): Observable<Book> {
     return this.http.post<Book>(`${this.baseUrl}/libros/`, book);
   }
 
